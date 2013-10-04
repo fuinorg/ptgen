@@ -5,8 +5,6 @@ Eclipse plugin for the SrcGen4J [Parameterized Template Generator](https://githu
 
 __CAUTION: *Project is in early stage*__
 
-&nbsp;
-
 To successfully build the project add the following repositories to your [.m2/settings.xml](http://maven.apache.org/settings.html "Maven Settings"):
 
 ```xml
