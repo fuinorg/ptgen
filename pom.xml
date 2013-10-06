@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -10,22 +9,22 @@
         <version>1.0.6</version>
     </parent>
 
-    <groupId>org.fuin.eclipse</groupId>
-    <artifactId>org.fuin.eclipse.ptgen</artifactId>
+    <artifactId>org.fuin.ptgen</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <packaging>eclipse-plugin</packaging>
-    <name>PTGen Eclipse Plugin</name>
+    <packaging>pom</packaging>
+
+    <name>Parameterized Template Generator / Parent</name>
     <description>Eclipse plugin for the SrcGen4J Parameterized Template Generator</description>
 
     <scm>
-        <url>https://github.com/fuinorg/org.fuin.eclipse.ptgen/</url>
-        <connection>scm:git:git://github.com/fuinorg/org.fuin.eclipse.ptgen.git</connection>
-        <developerConnection>scm:git:git@github.com:fuinorg/org.fuin.eclipse.ptgen.git</developerConnection>
+        <url>https://github.com/fuinorg/ptgen/</url>
+        <connection>scm:git:git://github.com/fuinorg/ptgen.git</connection>
+        <developerConnection>scm:git:git@github.com:fuinorg/ptgen.git</developerConnection>
     </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/fuinorg/org.fuin.eclipse.ptgen/issues</url>
+        <url>https://github.com/fuinorg/ptgen/issues</url>
     </issueManagement>
     
     <properties>
@@ -75,10 +74,21 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+
         </plugins>
 
     </build>
 
+  <modules>
+    <module>org.fuin.ptgen.plugin</module>
+    <module>org.fuin.ptgen.sdk</module>
+    <module>org.fuin.ptgen.tests</module>
+    <module>org.fuin.ptgen.repository</module>
+  </modules>
+  
 </project>
-
-

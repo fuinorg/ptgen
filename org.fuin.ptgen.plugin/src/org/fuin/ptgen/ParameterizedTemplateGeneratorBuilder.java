@@ -1,4 +1,4 @@
-package org.fuin.eclipse.ptgen;
+package org.fuin.ptgen;
 
 import java.util.Map;
 
@@ -12,7 +12,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public final class ParameterizedTemplateGeneratorBuilder extends IncrementalProjectBuilder {
-
+    
+    public static final String BUILDER_ID = "org.fuin.ptgen.plugin.ptgenbuilder";
+    
     public ParameterizedTemplateGeneratorBuilder() {
         super();
     }

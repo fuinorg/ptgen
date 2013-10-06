@@ -4,14 +4,14 @@
 
    <extension id="ptgennature" name="PTGenNature" point="org.eclipse.core.resources.natures">
       <runtime>
-         <run class="org.fuin.eclipse.ptgen.PTGenNature" />
+         <run class="org.fuin.ptgen.PTGenNature" />
       </runtime>      
-      <builder id="org.fuin.eclipse.ptgen.ptgenbuilder"/> 
-	</extension>
+      <builder id="org.fuin.ptgen.plugin.ptgenbuilder" /> 
+    </extension>
 
    <extension id="ptgenbuilder" name="PTGenBuilder" point="org.eclipse.core.resources.builders">
       <builder hasNature="true">
-         <run class="org.fuin.eclipse.ptgen.ParameterizedTemplateGeneratorBuilder" />
+         <run class="org.fuin.ptgen.ParameterizedTemplateGeneratorBuilder" />
       </builder>
    </extension>
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="org.fuin.ptgen.sdk" version="0.1.0.qualifier">
+      <category name="org.fuin.category"/>
+   </feature>
+   <category-def name="org.fuin.category" label="Parameterized Template Generator">
+      <description>
+         Parameterized Template Generator
+      </description>
+   </category-def>
+</site>

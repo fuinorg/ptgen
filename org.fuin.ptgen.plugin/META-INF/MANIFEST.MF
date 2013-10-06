@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.fuin.ptgen.plugin
+Bundle-Vendor: Future Invent Informationsmanagement GmbH
+Bundle-Version: 0.1.0.qualifier
+Bundle-SymbolicName: org.fuin.ptgen.plugin; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

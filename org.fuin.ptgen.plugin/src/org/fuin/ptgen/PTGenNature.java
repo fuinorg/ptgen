@@ -1,4 +1,4 @@
-package org.fuin.eclipse.ptgen;
+package org.fuin.ptgen;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
@@ -6,7 +6,7 @@ import org.eclipse.core.runtime.CoreException;
 
 public class PTGenNature implements IProjectNature {
 
-    public static final String NATURE_ID = "org.fuin.eclipse.ptgen.ptgennature";
+    public static final String NATURE_ID = "org.fuin.ptgen.plugin.ptgennature";
 
     public PTGenNature() {
         super();
