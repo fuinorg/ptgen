@@ -6,7 +6,7 @@ PTGen
 
 Eclipse plugin for the SrcGen4J [Parameterized Template Generator](https://github.com/fuinorg/srcgen4j-core/tree/master/src/main/java/org/fuin/srcgen4j/core/velocity "Parameterized Template Generator")
 
-__CAUTION: *Project is in early stage*__
+__CAUTION: *Project is in early stage (Work in progress)*__
 
 To successfully build the project add the following repositories to your [.m2/settings.xml](http://maven.apache.org/settings.html "Maven Settings"):
 
