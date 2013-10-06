@@ -9,12 +9,13 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public final class ParameterizedTemplateGeneratorBuilder extends IncrementalProjectBuilder {
-    
+
     public static final String BUILDER_ID = "org.fuin.ptgen.plugin.ptgenbuilder";
-    
+
     public ParameterizedTemplateGeneratorBuilder() {
         super();
     }
@@ -43,7 +44,7 @@ public final class ParameterizedTemplateGeneratorBuilder extends IncrementalProj
         delta.accept(new IResourceDeltaVisitor() {
             @Override
             public boolean visit(IResourceDelta delta) throws CoreException {
-                System.out.println("inc: " + delta.getResource());
+                println("inc: ", delta.getResource());
                 return true; // visit children too
             }
         });
@@ -54,10 +55,21 @@ public final class ParameterizedTemplateGeneratorBuilder extends IncrementalProj
         getProject().accept(new IResourceVisitor() {
             @Override
             public boolean visit(IResource resource) throws CoreException {
-                System.out.println(resource);
+                println("", resource);
                 return true;
             }
         });
+    }
+
+    private void println(String prefix, IResource resource) {
+        if (resource.getType() == IResource.FILE) {
+            IPath path = resource.getLocation();
+            if (path == null) {
+                System.out.println(prefix + resource);
+            } else {
+                System.out.println(prefix + path.toFile());
+            }
+        }
     }
 
 }
