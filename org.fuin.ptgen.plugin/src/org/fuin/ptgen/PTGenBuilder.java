@@ -44,20 +44,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Builder for the SrcGen4J parameterized template generator.
  */
-public final class ParameterizedTemplateGeneratorBuilder extends IncrementalProjectBuilder {
+public final class PTGenBuilder extends IncrementalProjectBuilder {
 
     /** Builder ID to use in ".project" file. */
     public static final String BUILDER_ID = "org.fuin.ptgen.plugin.ptgenbuilder";
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(ParameterizedTemplateGeneratorBuilder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PTGenBuilder.class);
 
     private Map<String, SrcGen4JConfig> configs;
 
     /**
      * Default constructor.
      */
-    public ParameterizedTemplateGeneratorBuilder() {
+    public PTGenBuilder() {
         super();
         configs = new HashMap<String, SrcGen4JConfig>();
     }

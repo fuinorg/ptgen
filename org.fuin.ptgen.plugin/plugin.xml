@@ -11,7 +11,7 @@
 
    <extension id="ptgenbuilder" name="PTGenBuilder" point="org.eclipse.core.resources.builders">
       <builder hasNature="true">
-         <run class="org.fuin.ptgen.ParameterizedTemplateGeneratorBuilder" />
+         <run class="org.fuin.ptgen.PTGenBuilder" />
       </builder>
    </extension>
 

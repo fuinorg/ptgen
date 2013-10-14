@@ -22,7 +22,7 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Eclipse nature for {@link ParameterizedTemplateGeneratorBuilder} projects.
+ * Eclipse nature for {@link PTGenBuilder} projects.
  */
 public final class PTGenNature implements IProjectNature {
 
