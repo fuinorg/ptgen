@@ -27,7 +27,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -51,14 +50,21 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(PTGenBuilder.class);
 
-    private Map<String, SrcGen4JConfig> configs;
+    private Map<String, SrcGen4J> configs;
 
     /**
      * Default constructor.
      */
     public PTGenBuilder() {
         super();
-        configs = new HashMap<String, SrcGen4JConfig>();
+        configs = new HashMap<String, SrcGen4J>();
+    }
+
+    @Override
+    protected void clean(final IProgressMonitor monitor) throws CoreException {
+        LOG.trace("BEGIN clean(IProgressMonitor)");
+        configs.clear();
+        LOG.trace("END clean(IProgressMonitor)");
     }
 
     @Override
@@ -75,17 +81,14 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
             LOG.info(getBuildType(kind) + " " + getProject().getName());
         }
 
-        if (kind == IncrementalProjectBuilder.CLEAN_BUILD) {
-            configs.clear();
-        }
-
         final IProject project = getProject();
         final boolean hasPTGenNature = project.hasNature(PTGenNature.NATURE_ID);
         if (LOG.isDebugEnabled()) {
             LOG.debug(PTGenNature.NATURE_ID + " Nature=" + hasPTGenNature);
         }
         if (hasPTGenNature) {
-            if (kind == IncrementalProjectBuilder.FULL_BUILD) {
+            if (kind == IncrementalProjectBuilder.FULL_BUILD
+                    || kind == IncrementalProjectBuilder.CLEAN_BUILD) {
                 fullBuild(project, monitor);
             } else {
                 final IResourceDelta delta = getDelta(getProject());
@@ -106,27 +109,37 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
         LOG.trace("BEGIN incrementalBuild(IResourceDelta, IProgressMonitor)");
         LOG.info("Incremental build on: " + project);
 
-        final Set<File> files = new HashSet<File>();
-        delta.accept(new IResourceDeltaVisitor() {
-            @Override
-            public final boolean visit(final IResourceDelta delta) throws CoreException {
-                addFile(files, delta.getResource());
-                return true;
-            }
-        });
+        final SrcGen4J srcGen4J = getSrcGen4J(project);
+        if (srcGen4J != null) {
 
-        final SrcGen4JConfig config = getConfig(project);
-        if (config != null) {
-            try {
-                new SrcGen4J(config).execute(files, this.getClass().getClassLoader());
-            } catch (final ParseException ex) {
-                LOG.error(
-                        "Error parsing the model [incrementalBuild, Project='" + project.getName()
-                                + "']", ex);
-            } catch (final GenerateException ex) {
-                LOG.error("Error generating [incrementalBuild, Project='" + project.getName()
-                        + "']", ex);
+            // Create filtered file list
+            final Set<File> files = new HashSet<File>();
+            delta.accept(new IResourceDeltaVisitor() {
+                @Override
+                public final boolean visit(final IResourceDelta delta) throws CoreException {
+                    addFile(srcGen4J, files, delta.getResource());
+                    return true;
+                }
+            });
+
+            if (files.size() == 0) {
+                LOG.info("No changed files");
+            } else {
+
+                // Execute generation
+                try {
+                    srcGen4J.execute(files);
+                } catch (final ParseException ex) {
+                    LOG.error(
+                            "Error parsing the model [incrementalBuild, Project='"
+                                    + project.getName() + "']", ex);
+                } catch (final GenerateException ex) {
+                    LOG.error("Error generating [incrementalBuild, Project='" + project.getName()
+                            + "']", ex);
+                }
+
             }
+
         }
         LOG.trace("END incrementalBuild(IResourceDelta, IProgressMonitor)");
 
@@ -138,19 +151,11 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
         LOG.trace("BEGIN fullBuild(IProgressMonitor)");
         LOG.info("Full build on: " + project);
 
-        final Set<File> files = new HashSet<File>();
-        project.accept(new IResourceVisitor() {
-            @Override
-            public final boolean visit(final IResource resource) throws CoreException {
-                addFile(files, resource);
-                return true;
-            }
-        });
-
-        final SrcGen4JConfig config = getConfig(project);
-        if (config != null) {
+        final SrcGen4J srcGen4J = getSrcGen4J(project);
+        if (srcGen4J != null) {
+            // Execute generation
             try {
-                new SrcGen4J(config).execute(files, this.getClass().getClassLoader());
+                srcGen4J.execute();
             } catch (final ParseException ex) {
                 LOG.error("Error parsing the model [fullBuild, Project='" + project.getName()
                         + "']", ex);
@@ -163,17 +168,18 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
 
     }
 
-    private SrcGen4JConfig getConfig(final IProject project) {
-        SrcGen4JConfig config = configs.get(project.getName());
-        if (config == null) {
+    private SrcGen4J getSrcGen4J(final IProject project) {
+        SrcGen4J srcGen4J = configs.get(project.getName());
+        if (srcGen4J == null) {
             final File configFile = project.getFile("srcgen4j-config.xml").getLocation().toFile();
             if (configFile.exists()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Reading config file: " + configFile);
                 }
                 try {
-                    config = PTGenHelper.createAndInit(configFile);
-                    configs.put(project.getName(), config);
+                    final SrcGen4JConfig config = PTGenHelper.createAndInit(configFile);
+                    srcGen4J = new SrcGen4J(config, this.getClass().getClassLoader());
+                    configs.put(project.getName(), srcGen4J);
                 } catch (final UnmarshalObjectException ex) {
                     LOG.error("Error reading config file [Project='" + project.getName()
                             + "', file='" + configFile + "']", ex);
@@ -182,10 +188,10 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
                 LOG.error("Config file not found: " + configFile);
             }
         }
-        return config;
+        return srcGen4J;
     }
 
-    private void addFile(final Set<File> files, final IResource resource) {
+    private void addFile(final SrcGen4J srcGen4J, final Set<File> files, final IResource resource) {
 
         if (resource.getType() == IResource.FILE) {
             final IPath path = resource.getLocation();
@@ -195,10 +201,16 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
                 }
             } else {
                 final File file = path.toFile();
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Added " + file.toString());
+                if (srcGen4J.getFileFilter().accept(file)) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Added " + file.toString());
+                    }
+                    files.add(file);
+                } else {
+                    if (LOG.isTraceEnabled()) {
+                        LOG.debug("No file filter match for " + file.toString());
+                    }
                 }
-                files.add(file);
             }
         } else {
             if (LOG.isTraceEnabled()) {
