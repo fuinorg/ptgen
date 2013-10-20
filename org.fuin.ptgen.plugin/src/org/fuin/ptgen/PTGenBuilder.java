@@ -111,8 +111,10 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
     private void incrementalBuild(final IProject project, final IResourceDelta delta,
             final IProgressMonitor monitor) throws CoreException {
 
-        LOG.trace("BEGIN incrementalBuild(IResourceDelta, IProgressMonitor)");
-        LOG.info("Incremental build on: " + project);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("BEGIN incrementalBuild(IProject, IResourceDelta, IProgressMonitor)");
+            LOG.trace("project=" + project);
+        }
 
         final SrcGen4J srcGen4J = getSrcGen4J(project);
         if (srcGen4J != null) {
@@ -146,7 +148,7 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
             }
 
         }
-        LOG.trace("END incrementalBuild(IResourceDelta, IProgressMonitor)");
+        LOG.trace("END incrementalBuild(IProject, IResourceDelta, IProgressMonitor)");
 
     }
 
