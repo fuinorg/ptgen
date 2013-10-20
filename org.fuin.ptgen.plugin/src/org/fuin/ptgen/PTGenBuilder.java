@@ -62,10 +62,14 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
 
     @Override
     protected void clean(final IProgressMonitor monitor) throws CoreException {
-        if (LOG.isInfoEnabled()) {
-            LOG.info("CLEAN " + getProject().getName());
+        final IProject project = getProject();
+        final boolean hasPTGenNature = project.hasNature(PTGenNature.NATURE_ID);
+        if (hasPTGenNature) {
+            if (LOG.isInfoEnabled()) {
+                LOG.info("CLEAN " + getProject().getName());
+            }
+            configs.remove(project.getName());
         }
-        configs.clear();
     }
 
     @Override
