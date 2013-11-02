@@ -45,6 +45,8 @@ import org.slf4j.LoggerFactory;
  */
 public final class PTGenBuilder extends IncrementalProjectBuilder {
 
+    private static final String SRCGEN4J_CONFIG_FILE = "srcgen4j-config.xml";
+
     /** Builder ID to use in ".project" file. */
     public static final String BUILDER_ID = "org.fuin.ptgen.plugin.ptgenbuilder";
 
@@ -133,18 +135,28 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
                 LOG.info("No changed files");
             } else {
 
-                // Execute generation
-                try {
-                    srcGen4J.execute(files);
-                } catch (final ParseException ex) {
-                    LOG.error(
-                            "Error parsing the model [incrementalBuild, Project='"
-                                    + project.getName() + "']", ex);
-                } catch (final GenerateException ex) {
-                    LOG.error("Error generating [incrementalBuild, Project='" + project.getName()
-                            + "']", ex);
-                }
+                final File configFile = getConfigLocation(project).toFile();
+                if (files.contains(configFile)) {
 
+                    LOG.info("Configuration file was modified: " + configFile);
+                    fullBuild(project, monitor);
+
+                } else {
+
+                    // Execute generation
+                    try {
+                        srcGen4J.execute(files);
+                    } catch (final ParseException ex) {
+                        LOG.error(
+                                "Error parsing the model [incrementalBuild, Project='"
+                                        + project.getName() + "']", ex);
+                    } catch (final GenerateException ex) {
+                        LOG.error(
+                                "Error generating [incrementalBuild, Project='" + project.getName()
+                                        + "']", ex);
+                    }
+
+                }
             }
 
         }
@@ -176,9 +188,10 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
     }
 
     private SrcGen4J getSrcGen4J(final IProject project) {
+
         SrcGen4J srcGen4J = configs.get(project.getName());
         if (srcGen4J == null) {
-            final File configFile = project.getFile("srcgen4j-config.xml").getLocation().toFile();
+            final File configFile = getConfigLocation(project).toFile();
             if (configFile.exists()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Reading config file: " + configFile);
@@ -197,6 +210,11 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
             }
         }
         return srcGen4J;
+
+    }
+
+    private IPath getConfigLocation(final IProject project) {
+        return project.getFile(SRCGEN4J_CONFIG_FILE).getLocation();
     }
 
     private void addFile(final SrcGen4J srcGen4J, final Set<File> files, final IResource resource) {
@@ -209,7 +227,8 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
                 }
             } else {
                 final File file = path.toFile();
-                if (srcGen4J.getFileFilter().accept(file)) {
+                if (file.getName().equals(SRCGEN4J_CONFIG_FILE)
+                        || srcGen4J.getFileFilter().accept(file)) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Added " + file.toString());
                     }
