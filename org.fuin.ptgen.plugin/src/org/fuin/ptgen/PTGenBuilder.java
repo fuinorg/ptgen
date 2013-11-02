@@ -184,8 +184,9 @@ public final class PTGenBuilder extends IncrementalProjectBuilder {
                     LOG.debug("Reading config file: " + configFile);
                 }
                 try {
-                    final SrcGen4JConfig config = PTGenHelper.createAndInit(configFile);
-                    srcGen4J = new SrcGen4J(config, this.getClass().getClassLoader());
+                    final PTGenContext context = new PTGenContext(project);
+                    final SrcGen4JConfig config = PTGenHelper.createAndInit(context, configFile);
+                    srcGen4J = new SrcGen4J(config, context);
                     configs.put(project.getName(), srcGen4J);
                 } catch (final UnmarshalObjectException ex) {
                     LOG.error("Error reading config file [Project='" + project.getName()
